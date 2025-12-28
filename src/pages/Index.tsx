@@ -5,11 +5,29 @@ import { RecentProblems } from '@/components/RecentProblems';
 import { RoadmapPreview } from '@/components/RoadmapPreview';
 import { ProgressCharts } from '@/components/ProgressCharts';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { useSupabaseData } from '@/hooks/useSupabaseData';
+import { useAuth } from '@/hooks/useAuth';
 
 const Index = () => {
+  const { user } = useAuth();
+  const { streakData, loading } = useSupabaseData();
+  
+  const displayName = user?.user_metadata?.display_name || 'Developer';
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="animate-pulse flex flex-col items-center gap-4">
+          <div className="w-12 h-12 rounded-xl gradient-primary animate-bounce" />
+          <p className="text-muted-foreground">Loading your data...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-background">
-      <Header />
+      <Header currentStreak={streakData.currentStreak} />
       
       <main className="container mx-auto px-4 py-6 space-y-6">
         {/* Hero Section */}
@@ -17,7 +35,7 @@ const Index = () => {
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
             <div>
               <h2 className="text-2xl sm:text-3xl font-bold">
-                Welcome back, <span className="text-gradient">Developer</span>
+                Welcome back, <span className="text-gradient">{displayName}</span>
               </h2>
               <p className="text-muted-foreground mt-1">
                 Track your progress and stay consistent with your DSA practice.

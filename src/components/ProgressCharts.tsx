@@ -1,9 +1,9 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { useStore } from '@/store/useStore';
+import { useSupabaseData } from '@/hooks/useSupabaseData';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell, PieChart, Pie } from 'recharts';
 
 export function ProgressCharts() {
-  const getUserStats = useStore((state) => state.getUserStats);
+  const { getUserStats } = useSupabaseData();
   const stats = getUserStats();
 
   const difficultyData = [

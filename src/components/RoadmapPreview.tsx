@@ -1,13 +1,12 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
-import { useStore } from '@/store/useStore';
-import { getTopicIcon } from '@/data/roadmap';
-import { ChevronRight, CheckCircle2, Circle, PlayCircle } from 'lucide-react';
+import { useSupabaseData } from '@/hooks/useSupabaseData';
+import { dsaRoadmap, getTopicIcon } from '@/data/roadmap';
+import { CheckCircle2, Circle, PlayCircle } from 'lucide-react';
 
 export function RoadmapPreview() {
-  const roadmap = useStore((state) => state.roadmap);
-  const updateTopicStatus = useStore((state) => state.updateTopicStatus);
+  const { updateTopicStatus, getTopicStatus } = useSupabaseData();
 
   const getStatusIcon = (status: string) => {
     switch (status) {
@@ -28,10 +27,16 @@ export function RoadmapPreview() {
   };
 
   // Calculate progress for each month
-  const monthProgress = roadmap.map((month) => {
-    const completed = month.topics.filter((t) => t.status === 'completed').length;
+  const monthProgress = dsaRoadmap.map((month) => {
+    const completed = month.topics.filter((t) => getTopicStatus(t.id) === 'completed').length;
     return Math.round((completed / month.topics.length) * 100);
   });
+
+  const totalCompleted = dsaRoadmap.reduce(
+    (sum, month) => sum + month.topics.filter(t => getTopicStatus(t.id) === 'completed').length, 
+    0
+  );
+  const totalTopics = dsaRoadmap.reduce((sum, m) => sum + m.topics.length, 0);
 
   return (
     <Card>
@@ -39,13 +44,12 @@ export function RoadmapPreview() {
         <CardTitle className="flex items-center justify-between">
           <span>3-Month Roadmap</span>
           <Badge variant="outline" className="font-normal">
-            {roadmap.reduce((sum, m) => sum + m.topics.filter(t => t.status === 'completed').length, 0)} / 
-            {roadmap.reduce((sum, m) => sum + m.topics.length, 0)} topics
+            {totalCompleted} / {totalTopics} topics
           </Badge>
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-6">
-        {roadmap.map((month, monthIndex) => (
+        {dsaRoadmap.map((month, monthIndex) => (
           <div key={month.month} className="space-y-3">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
@@ -58,20 +62,23 @@ export function RoadmapPreview() {
             </div>
             <Progress value={monthProgress[monthIndex]} className="h-2" />
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-              {month.topics.map((topic) => (
-                <button
-                  key={topic.id}
-                  onClick={() => cycleStatus(topic.id, topic.status)}
-                  className={`flex items-center gap-2 p-2 rounded-lg text-left text-sm transition-all
-                    ${topic.status === 'completed' ? 'bg-primary/10 text-primary' : 
-                      topic.status === 'in_progress' ? 'bg-accent/10 text-accent' : 
-                      'bg-secondary hover:bg-secondary/80'}`}
-                >
-                  {getStatusIcon(topic.status)}
-                  <span className="mr-1">{getTopicIcon(topic.name)}</span>
-                  <span className="truncate">{topic.name}</span>
-                </button>
-              ))}
+              {month.topics.map((topic) => {
+                const status = getTopicStatus(topic.id);
+                return (
+                  <button
+                    key={topic.id}
+                    onClick={() => cycleStatus(topic.id, status)}
+                    className={`flex items-center gap-2 p-2 rounded-lg text-left text-sm transition-all
+                      ${status === 'completed' ? 'bg-primary/10 text-primary' : 
+                        status === 'in_progress' ? 'bg-accent/10 text-accent' : 
+                        'bg-secondary hover:bg-secondary/80'}`}
+                  >
+                    {getStatusIcon(status)}
+                    <span className="mr-1">{getTopicIcon(topic.name)}</span>
+                    <span className="truncate">{topic.name}</span>
+                  </button>
+                );
+              })}
             </div>
           </div>
         ))}

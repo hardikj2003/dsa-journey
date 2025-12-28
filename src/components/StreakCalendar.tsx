@@ -1,13 +1,13 @@
 import { useMemo } from 'react';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
-import { useStore } from '@/store/useStore';
+import { useSupabaseData } from '@/hooks/useSupabaseData';
 
 interface StreakCalendarProps {
   days?: number;
 }
 
 export function StreakCalendar({ days = 365 }: StreakCalendarProps) {
-  const getActivityCalendar = useStore((state) => state.getActivityCalendar);
+  const { getActivityCalendar } = useSupabaseData();
   
   const calendarData = useMemo(() => getActivityCalendar(days), [getActivityCalendar, days]);
   
@@ -33,11 +33,9 @@ export function StreakCalendar({ days = 365 }: StreakCalendarProps) {
     const result: { date: string; count: number }[][] = [];
     let currentWeek: { date: string; count: number }[] = [];
     
-    // Start from the first day and fill until we hit a Sunday
     const firstDate = new Date(calendarData[0]?.date || new Date());
     const firstDayOfWeek = firstDate.getDay();
     
-    // Add empty slots for days before the first date
     for (let i = 0; i < firstDayOfWeek; i++) {
       currentWeek.push({ date: '', count: -1 });
     }
@@ -63,7 +61,6 @@ export function StreakCalendar({ days = 365 }: StreakCalendarProps) {
   return (
     <div className="w-full overflow-x-auto scrollbar-hide">
       <div className="min-w-fit">
-        {/* Month labels */}
         <div className="flex mb-1 pl-8">
           {months.map((month, i) => (
             <span key={i} className="text-xs text-muted-foreground" style={{ width: `${100/12}%`, minWidth: '30px' }}>
@@ -73,7 +70,6 @@ export function StreakCalendar({ days = 365 }: StreakCalendarProps) {
         </div>
         
         <div className="flex gap-0.5">
-          {/* Day labels */}
           <div className="flex flex-col gap-0.5 pr-1">
             {weekDays.map((day, i) => (
               <span key={i} className="text-[10px] text-muted-foreground h-3 flex items-center">
@@ -82,7 +78,6 @@ export function StreakCalendar({ days = 365 }: StreakCalendarProps) {
             ))}
           </div>
           
-          {/* Calendar grid */}
           <div className="flex gap-0.5">
             {weeks.map((week, weekIndex) => (
               <div key={weekIndex} className="flex flex-col gap-0.5">
@@ -110,7 +105,6 @@ export function StreakCalendar({ days = 365 }: StreakCalendarProps) {
           </div>
         </div>
         
-        {/* Legend */}
         <div className="flex items-center justify-end gap-2 mt-2">
           <span className="text-xs text-muted-foreground">Less</span>
           <div className="flex gap-0.5">

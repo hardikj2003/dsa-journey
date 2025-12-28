@@ -6,13 +6,15 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { useStore } from '@/store/useStore';
-import { Platform, Difficulty, Topic } from '@/types';
-import { toast } from '@/hooks/use-toast';
+import { useSupabaseData } from '@/hooks/useSupabaseData';
+import type { Database } from '@/integrations/supabase/types';
+
+type Platform = Database['public']['Enums']['platform_type'];
+type Difficulty = Database['public']['Enums']['difficulty_level'];
 
 const platforms: Platform[] = ['LeetCode', 'GeeksforGeeks', 'Codeforces', 'HackerRank', 'CodeChef', 'Other'];
 const difficulties: Difficulty[] = ['Easy', 'Medium', 'Hard'];
-const topics: Topic[] = [
+const topics = [
   'Arrays', 'Strings', 'Hashing', 'Recursion', 'Sorting', 'Stack', 'Queue',
   'Linked List', 'Binary Search', 'Trees', 'Heaps', 'Greedy', 'Graphs',
   'Dynamic Programming', 'Tries', 'Backtracking', 'Sliding Window',
@@ -20,40 +22,39 @@ const topics: Topic[] = [
 ];
 
 export function AddProblemDialog() {
-  const addProblem = useStore((state) => state.addProblem);
+  const { addProblem } = useSupabaseData();
   const [open, setOpen] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     name: '',
     platform: 'LeetCode' as Platform,
     difficulty: 'Medium' as Difficulty,
-    topic: 'Arrays' as Topic,
-    timeSpent: 30,
+    topic: 'Arrays',
+    time_spent: 30,
     notes: '',
-    codeSnippet: ''
+    code_snippet: ''
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
     if (!formData.name.trim()) {
-      toast({
-        title: 'Error',
-        description: 'Please enter a problem name',
-        variant: 'destructive'
-      });
       return;
     }
 
-    addProblem({
-      ...formData,
+    setLoading(true);
+    
+    await addProblem({
+      name: formData.name,
+      platform: formData.platform,
+      difficulty: formData.difficulty,
+      topic: formData.topic,
+      time_spent: formData.time_spent,
+      notes: formData.notes || null,
+      code_snippet: formData.code_snippet || null,
       date: new Date().toISOString().split('T')[0],
-      isBookmarked: false,
+      is_bookmarked: false,
       tags: []
-    });
-
-    toast({
-      title: '🎉 Problem logged!',
-      description: `"${formData.name}" has been added to your progress.`
     });
 
     setFormData({
@@ -61,10 +62,11 @@ export function AddProblemDialog() {
       platform: 'LeetCode',
       difficulty: 'Medium',
       topic: 'Arrays',
-      timeSpent: 30,
+      time_spent: 30,
       notes: '',
-      codeSnippet: ''
+      code_snippet: ''
     });
+    setLoading(false);
     setOpen(false);
   };
 
@@ -88,6 +90,7 @@ export function AddProblemDialog() {
               placeholder="e.g., Two Sum"
               value={formData.name}
               onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+              required
             />
           </div>
 
@@ -132,7 +135,7 @@ export function AddProblemDialog() {
               <Label>Topic</Label>
               <Select
                 value={formData.topic}
-                onValueChange={(value: Topic) => setFormData({ ...formData, topic: value })}
+                onValueChange={(value) => setFormData({ ...formData, topic: value })}
               >
                 <SelectTrigger>
                   <SelectValue />
@@ -146,15 +149,15 @@ export function AddProblemDialog() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="timeSpent" className="flex items-center gap-1">
+              <Label htmlFor="time_spent" className="flex items-center gap-1">
                 <Clock className="h-3 w-3" /> Time (min)
               </Label>
               <Input
-                id="timeSpent"
+                id="time_spent"
                 type="number"
                 min={1}
-                value={formData.timeSpent}
-                onChange={(e) => setFormData({ ...formData, timeSpent: parseInt(e.target.value) || 0 })}
+                value={formData.time_spent}
+                onChange={(e) => setFormData({ ...formData, time_spent: parseInt(e.target.value) || 0 })}
               />
             </div>
           </div>
@@ -179,15 +182,15 @@ export function AddProblemDialog() {
             <Textarea
               id="code"
               placeholder="Paste your solution here..."
-              value={formData.codeSnippet}
-              onChange={(e) => setFormData({ ...formData, codeSnippet: e.target.value })}
+              value={formData.code_snippet}
+              onChange={(e) => setFormData({ ...formData, code_snippet: e.target.value })}
               rows={4}
               className="font-mono text-sm"
             />
           </div>
 
-          <Button type="submit" className="w-full" variant="gradient">
-            Save Problem
+          <Button type="submit" className="w-full" variant="gradient" disabled={loading}>
+            {loading ? 'Saving...' : 'Save Problem'}
           </Button>
         </form>
       </DialogContent>
