@@ -14,7 +14,147 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      notifications: {
+        Row: {
+          created_at: string
+          id: string
+          is_read: boolean | null
+          message: string
+          title: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_read?: boolean | null
+          message: string
+          title: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_read?: boolean | null
+          message?: string
+          title?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      problems: {
+        Row: {
+          code_snippet: string | null
+          created_at: string
+          date: string
+          difficulty: Database["public"]["Enums"]["difficulty_level"]
+          id: string
+          is_bookmarked: boolean | null
+          name: string
+          notes: string | null
+          platform: Database["public"]["Enums"]["platform_type"]
+          tags: string[] | null
+          time_spent: number | null
+          topic: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          code_snippet?: string | null
+          created_at?: string
+          date?: string
+          difficulty?: Database["public"]["Enums"]["difficulty_level"]
+          id?: string
+          is_bookmarked?: boolean | null
+          name: string
+          notes?: string | null
+          platform?: Database["public"]["Enums"]["platform_type"]
+          tags?: string[] | null
+          time_spent?: number | null
+          topic: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          code_snippet?: string | null
+          created_at?: string
+          date?: string
+          difficulty?: Database["public"]["Enums"]["difficulty_level"]
+          id?: string
+          is_bookmarked?: boolean | null
+          name?: string
+          notes?: string | null
+          platform?: Database["public"]["Enums"]["platform_type"]
+          tags?: string[] | null
+          time_spent?: number | null
+          topic?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          created_at: string
+          display_name: string | null
+          id: string
+          reminder_enabled: boolean | null
+          reminder_time: string | null
+          timezone: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          display_name?: string | null
+          id?: string
+          reminder_enabled?: boolean | null
+          reminder_time?: string | null
+          timezone?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          display_name?: string | null
+          id?: string
+          reminder_enabled?: boolean | null
+          reminder_time?: string | null
+          timezone?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      roadmap_progress: {
+        Row: {
+          completed_problems: number | null
+          created_at: string
+          id: string
+          status: Database["public"]["Enums"]["roadmap_status"]
+          topic_id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          completed_problems?: number | null
+          created_at?: string
+          id?: string
+          status?: Database["public"]["Enums"]["roadmap_status"]
+          topic_id: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          completed_problems?: number | null
+          created_at?: string
+          id?: string
+          status?: Database["public"]["Enums"]["roadmap_status"]
+          topic_id?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
@@ -23,7 +163,15 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      [_ in never]: never
+      difficulty_level: "Easy" | "Medium" | "Hard"
+      platform_type:
+        | "LeetCode"
+        | "GeeksforGeeks"
+        | "Codeforces"
+        | "HackerRank"
+        | "CodeChef"
+        | "Other"
+      roadmap_status: "not_started" | "in_progress" | "completed"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +298,17 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      difficulty_level: ["Easy", "Medium", "Hard"],
+      platform_type: [
+        "LeetCode",
+        "GeeksforGeeks",
+        "Codeforces",
+        "HackerRank",
+        "CodeChef",
+        "Other",
+      ],
+      roadmap_status: ["not_started", "in_progress", "completed"],
+    },
   },
 } as const

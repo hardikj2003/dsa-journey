@@ -1,18 +1,17 @@
 import { Flame, Trophy, Calendar, Target } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
-import { useStore } from '@/store/useStore';
+import { useSupabaseData } from '@/hooks/useSupabaseData';
+import { dsaRoadmap } from '@/data/roadmap';
 
 export function StatsCards() {
-  const streakData = useStore((state) => state.streakData);
-  const getUserStats = useStore((state) => state.getUserStats);
-  const roadmap = useStore((state) => state.roadmap);
+  const { streakData, getUserStats, getTopicStatus } = useSupabaseData();
   
   const stats = getUserStats();
   
   // Calculate roadmap progress
-  const totalTopics = roadmap.reduce((sum, month) => sum + month.topics.length, 0);
-  const completedTopics = roadmap.reduce(
-    (sum, month) => sum + month.topics.filter(t => t.status === 'completed').length,
+  const totalTopics = dsaRoadmap.reduce((sum, month) => sum + month.topics.length, 0);
+  const completedTopics = dsaRoadmap.reduce(
+    (sum, month) => sum + month.topics.filter(t => getTopicStatus(t.id) === 'completed').length,
     0
   );
   const roadmapProgress = totalTopics > 0 ? Math.round((completedTopics / totalTopics) * 100) : 0;

@@ -1,9 +1,11 @@
-import { Bookmark, Clock, ExternalLink, Trash2 } from 'lucide-react';
+import { Bookmark, Clock, Trash2 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { useStore } from '@/store/useStore';
-import { Problem } from '@/types';
+import { useSupabaseData } from '@/hooks/useSupabaseData';
+import type { Database } from '@/integrations/supabase/types';
+
+type Problem = Database['public']['Tables']['problems']['Row'];
 
 interface RecentProblemsProps {
   limit?: number;
@@ -19,9 +21,7 @@ const platformColors: Record<string, string> = {
 };
 
 export function RecentProblems({ limit = 5 }: RecentProblemsProps) {
-  const getRecentProblems = useStore((state) => state.getRecentProblems);
-  const toggleBookmark = useStore((state) => state.toggleBookmark);
-  const deleteProblem = useStore((state) => state.deleteProblem);
+  const { getRecentProblems, toggleBookmark, deleteProblem } = useSupabaseData();
   
   const problems = getRecentProblems(limit);
 
@@ -90,7 +90,7 @@ export function RecentProblems({ limit = 5 }: RecentProblemsProps) {
                 </Badge>
                 <span className="text-xs text-muted-foreground flex items-center gap-1">
                   <Clock className="h-3 w-3" />
-                  {problem.timeSpent}min
+                  {problem.time_spent}min
                 </span>
                 <span className="text-xs text-muted-foreground">
                   {formatDate(problem.date)}
@@ -105,7 +105,7 @@ export function RecentProblems({ limit = 5 }: RecentProblemsProps) {
                 onClick={() => toggleBookmark(problem.id)}
               >
                 <Bookmark
-                  className={`h-4 w-4 ${problem.isBookmarked ? 'fill-primary text-primary' : ''}`}
+                  className={`h-4 w-4 ${problem.is_bookmarked ? 'fill-primary text-primary' : ''}`}
                 />
               </Button>
               <Button
