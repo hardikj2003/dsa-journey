@@ -2,7 +2,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { useSupabaseData } from '@/hooks/useSupabaseData';
-import { dsaRoadmap, getTopicIcon } from '@/data/roadmap';
+import { dsaRoadmap } from '@/data/roadmap';
 import { CheckCircle2, Circle, PlayCircle } from 'lucide-react';
 
 export function RoadmapPreview() {
