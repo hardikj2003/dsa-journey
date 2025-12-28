@@ -4,6 +4,7 @@ import { StreakCalendar } from '@/components/StreakCalendar';
 import { RecentProblems } from '@/components/RecentProblems';
 import { RoadmapPreview } from '@/components/RoadmapPreview';
 import { ProgressCharts } from '@/components/ProgressCharts';
+import { ReminderSettings } from '@/components/ReminderSettings';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useSupabaseData } from '@/hooks/useSupabaseData';
 import { useAuth } from '@/hooks/useAuth';
@@ -69,7 +70,10 @@ const Index = () => {
         {/* Main Content Grid */}
         <section className="grid lg:grid-cols-2 gap-6 animate-fade-in" style={{ animationDelay: '300ms' }}>
           <RecentProblems limit={5} />
-          <ProgressCharts />
+          <div className="space-y-6">
+            <ProgressCharts />
+            <ReminderSettings />
+          </div>
         </section>
 
         {/* Roadmap Section */}
