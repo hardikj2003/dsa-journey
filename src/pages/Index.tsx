@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { Header } from '@/components/Header';
 import { StatsCards } from '@/components/StatsCards';
 import { StreakCalendar } from '@/components/StreakCalendar';
@@ -5,15 +6,43 @@ import { RecentProblems } from '@/components/RecentProblems';
 import { RoadmapPreview } from '@/components/RoadmapPreview';
 import { ProgressCharts } from '@/components/ProgressCharts';
 import { ReminderSettings } from '@/components/ReminderSettings';
+import { BadgesDisplay } from '@/components/BadgesDisplay';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useSupabaseData } from '@/hooks/useSupabaseData';
 import { useAuth } from '@/hooks/useAuth';
+import { useBadges } from '@/hooks/useBadges';
+import { dsaRoadmap } from '@/data/roadmap';
 
 const Index = () => {
   const { user } = useAuth();
-  const { streakData, loading } = useSupabaseData();
+  const { streakData, roadmapProgress, loading } = useSupabaseData();
+  const { checkAndAwardBadges } = useBadges();
   
   const displayName = user?.user_metadata?.display_name || 'Developer';
+
+  // Check and award badges when data changes
+  useEffect(() => {
+    if (!loading && streakData.totalProblems >= 0) {
+      // Calculate completed months
+      const completedMonths: number[] = [];
+      dsaRoadmap.forEach(month => {
+        const monthTopics = month.topics;
+        const completedTopics = monthTopics.filter(topic => 
+          roadmapProgress.find(p => p.topic_id === topic.id && p.status === 'completed')
+        );
+        if (completedTopics.length === monthTopics.length && monthTopics.length > 0) {
+          completedMonths.push(month.month);
+        }
+      });
+
+      checkAndAwardBadges(
+        streakData.currentStreak,
+        streakData.longestStreak,
+        streakData.totalProblems,
+        completedMonths
+      );
+    }
+  }, [loading, streakData, roadmapProgress, checkAndAwardBadges]);
 
   if (loading) {
     return (
@@ -67,8 +96,13 @@ const Index = () => {
           </Card>
         </section>
 
+        {/* Badges Section */}
+        <section className="animate-fade-in" style={{ animationDelay: '300ms' }}>
+          <BadgesDisplay />
+        </section>
+
         {/* Main Content Grid */}
-        <section className="grid lg:grid-cols-2 gap-6 animate-fade-in" style={{ animationDelay: '300ms' }}>
+        <section className="grid lg:grid-cols-2 gap-6 animate-fade-in" style={{ animationDelay: '400ms' }}>
           <RecentProblems limit={5} />
           <div className="space-y-6">
             <ProgressCharts />
