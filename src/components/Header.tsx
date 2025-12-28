@@ -1,7 +1,8 @@
-import { Code2, Flame, Menu, Moon, Sun, X, LogOut, User } from 'lucide-react';
+import { Code2, Flame, Menu, Moon, Sun, X, LogOut } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useState, useEffect } from 'react';
 import { AddProblemDialog } from './AddProblemDialog';
+import { NotificationsDropdown } from './NotificationsDropdown';
 import { useAuth } from '@/hooks/useAuth';
 import {
   DropdownMenu,
@@ -86,6 +87,8 @@ export function Header({ currentStreak }: HeaderProps) {
             >
               {isDark ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
             </Button>
+
+            <NotificationsDropdown />
 
             <AddProblemDialog />
 
