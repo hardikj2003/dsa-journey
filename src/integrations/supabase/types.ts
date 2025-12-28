@@ -155,6 +155,27 @@ export type Database = {
         }
         Relationships: []
       }
+      user_badges: {
+        Row: {
+          badge_type: Database["public"]["Enums"]["badge_type"]
+          earned_at: string
+          id: string
+          user_id: string
+        }
+        Insert: {
+          badge_type: Database["public"]["Enums"]["badge_type"]
+          earned_at?: string
+          id?: string
+          user_id: string
+        }
+        Update: {
+          badge_type?: Database["public"]["Enums"]["badge_type"]
+          earned_at?: string
+          id?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
@@ -163,6 +184,20 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
+      badge_type:
+        | "streak_7"
+        | "streak_30"
+        | "streak_100"
+        | "streak_365"
+        | "problems_10"
+        | "problems_50"
+        | "problems_100"
+        | "problems_500"
+        | "first_problem"
+        | "roadmap_month_1"
+        | "roadmap_month_2"
+        | "roadmap_month_3"
+        | "roadmap_complete"
       difficulty_level: "Easy" | "Medium" | "Hard"
       platform_type:
         | "LeetCode"
@@ -299,6 +334,21 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
+      badge_type: [
+        "streak_7",
+        "streak_30",
+        "streak_100",
+        "streak_365",
+        "problems_10",
+        "problems_50",
+        "problems_100",
+        "problems_500",
+        "first_problem",
+        "roadmap_month_1",
+        "roadmap_month_2",
+        "roadmap_month_3",
+        "roadmap_complete",
+      ],
       difficulty_level: ["Easy", "Medium", "Hard"],
       platform_type: [
         "LeetCode",
