@@ -1,6 +1,7 @@
 import { Code2, Flame, Menu, Moon, Sun, X, LogOut } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useState, useEffect } from 'react';
+import { Link, useLocation } from 'react-router-dom';
 import { AddProblemDialog } from './AddProblemDialog';
 import { NotificationsDropdown } from './NotificationsDropdown';
 import { useAuth } from '@/hooks/useAuth';
@@ -13,6 +14,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { cn } from '@/lib/utils';
 
 interface HeaderProps {
   currentStreak: number;
@@ -22,6 +24,7 @@ export function Header({ currentStreak }: HeaderProps) {
   const [isDark, setIsDark] = useState(true);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const { user, signOut } = useAuth();
+  const location = useLocation();
 
   useEffect(() => {
     document.documentElement.classList.add('dark');
@@ -38,6 +41,13 @@ export function Header({ currentStreak }: HeaderProps) {
 
   const displayName = user?.user_metadata?.display_name || 'Developer';
   const initials = displayName.split(' ').map((n: string) => n[0]).join('').toUpperCase().slice(0, 2);
+
+  const navItems = [
+    { path: '/', label: 'Dashboard' },
+    { path: '/problems', label: 'Problems' },
+    { path: '/roadmap', label: 'Roadmap' },
+    { path: '/analytics', label: 'Analytics' },
+  ];
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/80 backdrop-blur-xl">
@@ -56,18 +66,18 @@ export function Header({ currentStreak }: HeaderProps) {
 
           {/* Desktop Nav */}
           <nav className="hidden md:flex items-center gap-6">
-            <a href="#" className="text-sm font-medium text-foreground hover:text-primary transition-colors">
-              Dashboard
-            </a>
-            <a href="#" className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors">
-              Problems
-            </a>
-            <a href="#" className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors">
-              Roadmap
-            </a>
-            <a href="#" className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors">
-              Analytics
-            </a>
+            {navItems.map((item) => (
+              <Link
+                key={item.path}
+                to={item.path}
+                className={cn(
+                  "text-sm font-medium transition-colors hover:text-primary",
+                  location.pathname === item.path ? "text-foreground" : "text-muted-foreground"
+                )}
+              >
+                {item.label}
+              </Link>
+            ))}
           </nav>
 
           {/* Right side */}
@@ -134,18 +144,19 @@ export function Header({ currentStreak }: HeaderProps) {
         {mobileMenuOpen && (
           <div className="md:hidden py-4 border-t border-border animate-fade-in">
             <nav className="flex flex-col gap-2">
-              <a href="#" className="px-4 py-2 text-sm font-medium text-foreground hover:bg-secondary rounded-lg">
-                Dashboard
-              </a>
-              <a href="#" className="px-4 py-2 text-sm font-medium text-muted-foreground hover:bg-secondary rounded-lg">
-                Problems
-              </a>
-              <a href="#" className="px-4 py-2 text-sm font-medium text-muted-foreground hover:bg-secondary rounded-lg">
-                Roadmap
-              </a>
-              <a href="#" className="px-4 py-2 text-sm font-medium text-muted-foreground hover:bg-secondary rounded-lg">
-                Analytics
-              </a>
+              {navItems.map((item) => (
+                <Link
+                  key={item.path}
+                  to={item.path}
+                  onClick={() => setMobileMenuOpen(false)}
+                  className={cn(
+                    "px-4 py-2 text-sm font-medium hover:bg-secondary rounded-lg",
+                    location.pathname === item.path ? "text-foreground" : "text-muted-foreground"
+                  )}
+                >
+                  {item.label}
+                </Link>
+              ))}
               <div className="flex items-center justify-between px-4 py-2">
                 <span className="text-sm text-muted-foreground">Theme</span>
                 <Button variant="ghost" size="icon" onClick={toggleTheme}>

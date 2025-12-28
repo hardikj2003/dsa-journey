@@ -6,6 +6,9 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider, useAuth } from "@/hooks/useAuth";
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
+import Problems from "./pages/Problems";
+import Roadmap from "./pages/Roadmap";
+import Analytics from "./pages/Analytics";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -62,6 +65,21 @@ const AppRoutes = () => (
     <Route path="/" element={
       <ProtectedRoute>
         <Index />
+      </ProtectedRoute>
+    } />
+    <Route path="/problems" element={
+      <ProtectedRoute>
+        <Problems />
+      </ProtectedRoute>
+    } />
+    <Route path="/roadmap" element={
+      <ProtectedRoute>
+        <Roadmap />
+      </ProtectedRoute>
+    } />
+    <Route path="/analytics" element={
+      <ProtectedRoute>
+        <Analytics />
       </ProtectedRoute>
     } />
     <Route path="*" element={<NotFound />} />
