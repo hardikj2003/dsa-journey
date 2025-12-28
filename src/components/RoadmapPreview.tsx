@@ -74,7 +74,6 @@ export function RoadmapPreview() {
                         'bg-secondary hover:bg-secondary/80'}`}
                   >
                     {getStatusIcon(status)}
-                    <span className="mr-1">{getTopicIcon(topic.name)}</span>
                     <span className="truncate">{topic.name}</span>
                   </button>
                 );
