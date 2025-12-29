@@ -28,14 +28,15 @@ export function StreakCalendar({ days = 365 }: StreakCalendarProps) {
     });
   };
 
-  // Group by weeks for the grid layout
-  const weeks = useMemo(() => {
+  // Group by weeks for the grid layout and calculate month positions
+  const { weeks, monthLabels } = useMemo(() => {
     const result: { date: string; count: number }[][] = [];
     let currentWeek: { date: string; count: number }[] = [];
     
     const firstDate = new Date(calendarData[0]?.date || new Date());
     const firstDayOfWeek = firstDate.getDay();
     
+    // Pad the first week
     for (let i = 0; i < firstDayOfWeek; i++) {
       currentWeek.push({ date: '', count: -1 });
     }
@@ -52,19 +53,40 @@ export function StreakCalendar({ days = 365 }: StreakCalendarProps) {
       result.push(currentWeek);
     }
     
-    return result;
+    // Calculate month labels with their week positions
+    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    const labels: { month: string; weekIndex: number }[] = [];
+    let lastMonth = -1;
+    
+    result.forEach((week, weekIndex) => {
+      const firstValidDay = week.find(d => d.count !== -1 && d.date);
+      if (firstValidDay) {
+        const date = new Date(firstValidDay.date);
+        const month = date.getMonth();
+        if (month !== lastMonth) {
+          labels.push({ month: months[month], weekIndex });
+          lastMonth = month;
+        }
+      }
+    });
+    
+    return { weeks: result, monthLabels: labels };
   }, [calendarData]);
 
-  const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
   const weekDays = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
   return (
     <div className="w-full overflow-x-auto scrollbar-hide">
       <div className="min-w-fit">
-        <div className="flex mb-1 pl-8">
-          {months.map((month, i) => (
-            <span key={i} className="text-xs text-muted-foreground" style={{ width: `${100/12}%`, minWidth: '30px' }}>
-              {month}
+        {/* Month labels positioned above their actual weeks */}
+        <div className="flex mb-1 pl-8 relative h-4">
+          {monthLabels.map((label, i) => (
+            <span 
+              key={i} 
+              className="text-xs text-muted-foreground absolute"
+              style={{ left: `calc(32px + ${label.weekIndex * 14}px)` }}
+            >
+              {label.month}
             </span>
           ))}
         </div>
