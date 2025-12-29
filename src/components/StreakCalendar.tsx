@@ -54,18 +54,23 @@ export function StreakCalendar({ days = 365 }: StreakCalendarProps) {
     }
     
     // Calculate month labels with their week positions
+    // Only show labels where there's enough space (skip if too close to previous)
     const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
     const labels: { month: string; weekIndex: number }[] = [];
     let lastMonth = -1;
+    let lastLabelWeek = -4; // Ensure minimum 4 weeks between labels
     
     result.forEach((week, weekIndex) => {
       const firstValidDay = week.find(d => d.count !== -1 && d.date);
       if (firstValidDay) {
         const date = new Date(firstValidDay.date);
         const month = date.getMonth();
-        if (month !== lastMonth) {
+        if (month !== lastMonth && weekIndex - lastLabelWeek >= 3) {
           labels.push({ month: months[month], weekIndex });
           lastMonth = month;
+          lastLabelWeek = weekIndex;
+        } else if (month !== lastMonth) {
+          lastMonth = month; // Track month change but don't add label
         }
       }
     });
