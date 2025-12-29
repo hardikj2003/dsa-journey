@@ -108,7 +108,7 @@ export default function Auth() {
       <Card className="w-full max-w-md relative glass animate-fade-in-up">
         <CardHeader className="space-y-4 text-center">
           <div className="mx-auto flex items-center justify-center w-14 h-14 rounded-2xl gradient-primary">
-            <Code2 className="h-7 w-7 text-primary-foreground" />
+            <Code2 className="h-7 w-7 text-white" />
           </div>
           <div>
             <CardTitle className="text-2xl">
